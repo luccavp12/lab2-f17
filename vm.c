@@ -335,6 +335,8 @@ copyuvm(pde_t *pgdir, uint sz)
     if(mappages(d, (void*)i, PGSIZE, V2P(mem), flags) < 0)
       goto bad;
   }
+  //Need to add in another for loop that is very similar, but need to add another
+  //variable in struct proc to keep track of the size of the stack
   return d;
 
 bad:
