@@ -63,11 +63,13 @@ exec(char *path, char **argv)
   // Allocate two pages at the next page boundary.
   // Make the first inaccessible.  Use the second as the user stack.
   sz = PGROUNDUP(sz); //round sz up to the next page boundary since stack must start in a new page
-  if((sz = allocuvm(pgdir, sz, sz + 2*PGSIZE)) == 0) 
+  if((sz = allocuvm(pgdir, STACKBASE, STACKBASE - PGSIZE)) == 0) 
     //Need to change the allocuvm() parameters in order to move the stack to the end
     goto bad;
   clearpteu(pgdir, (char*)(sz - 2*PGSIZE));
-  sp = sz;
+  sp = STACKBASE - PGSIZE; // Change stack pointer to address of the top word in the stack page
+  // Since STACKBASE is 1 space below the base of the Kernel space, we want to point
+  // to the position all the way to the top of the stack
 
 /*
 ^^^TODO 1: This is the part of the code that we need to change to move
