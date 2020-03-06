@@ -313,7 +313,7 @@ clearpteu(pde_t *pgdir, char *uva)
 // Given a parent process's page table, create a copy
 // of it for a child.
 pde_t*
-copyuvm(pde_t *pgdir, uint sz)
+copyuvm(struct proc* p) //Changed parameter
 {
   pde_t *d;
   pte_t *pte;
@@ -322,8 +322,8 @@ copyuvm(pde_t *pgdir, uint sz)
 
   if((d = setupkvm()) == 0)
     return 0;
-  for(i = 0; i < sz; i += PGSIZE){ //Need to change parameters to new stack position
-    if((pte = walkpgdir(pgdir, (void *) i, 0)) == 0)
+  for(i = 0; i < p->sz; i += PGSIZE){ //Need to change parameters to new stack position
+    if((pte = walkpgdir(p->pgdir, (void *) i, 0)) == 0)
       panic("copyuvm: pte should exist");
     if(!(*pte & PTE_P))
       panic("copyuvm: page not present");
@@ -336,7 +336,33 @@ copyuvm(pde_t *pgdir, uint sz)
       goto bad;
   }
   //Need to add in another for loop that is very similar, but need to add another
-  //variable in struct proc to keep track of the size of the stack
+  //variable in struct proc(proc.h) to keep track of the size of the stack
+
+  //TODO 4: Second For Loop
+  for (int i = 0; i < p->stacksize; i++) {	
+    uint page = STACKBASE - ((PGSIZE - 1) * (i + 1));
+    if ((pte = walkpgdir(p->pgdir, (void *)page, 0)) == 0)
+      panic("copyuvm loop 2: no pte");
+    // Checks if PTE_P is found
+    if (!(*pte & PTE_P)){
+      cprintf("%x", page);
+      panic("copyuvm loop 2: page is not present");
+    }
+    pa = PTE_ADDR(*pte);
+    flags = PTE_FLAGS(*pte); 
+    // Allocating new page
+    if ((mem =kalloc())  == 0) {
+      cprintf("copyuvm loop 2: page allocation failed");
+      goto bad;
+    }
+    // Copy memory from old phtsical page to new physical page
+    memmove(mem, (void *)P2V(pa), PGSIZE);
+    if (mappages(d, (void *)page, PGSIZE, V2P(mem), flags) < 0) {
+      cprintf("copyuvm: mappages() doesn't map correctly");
+      goto bad;
+    }
+  }
+
   return d;
 
 bad:

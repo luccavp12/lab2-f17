@@ -19,6 +19,9 @@ exec(char *path, char **argv)
   pde_t *pgdir, *oldpgdir;
   struct proc *curproc = myproc();
 
+  //Initializing the stack size, in unit of pages
+  curproc->stacksize = 1;
+
   begin_op();
 
   if((ip = namei(path)) == 0){
