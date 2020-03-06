@@ -66,7 +66,7 @@ exec(char *path, char **argv)
   if((sz = allocuvm(pgdir, STACKBASE, STACKBASE - PGSIZE)) == 0) 
     //Need to change the allocuvm() parameters in order to move the stack to the end
     goto bad;
-  clearpteu(pgdir, (char*)(sz - 2*PGSIZE));
+  // clearpteu(pgdir, (char*)(sz - 2*PGSIZE));
   sp = STACKBASE - PGSIZE; // Change stack pointer to address of the top word in the stack page
   // Since STACKBASE is 1 space below the base of the Kernel space, we want to point
   // to the position all the way to the top of the stack
