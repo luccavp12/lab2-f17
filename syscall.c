@@ -41,12 +41,11 @@ fetchstr(uint addr, char **pp)
   *pp = (char*)addr;
   // ep = (char*)curproc->sz;
   s = *pp;
-  for(;;){
-    if(*s == 0)
-      return s - *pp;
+  while (*s != 0) {
     s++;
   }
-  return -1;
+  
+  return (s - *pp) - 1;
 }
 
 // Fetch the nth 32-bit system call argument.
