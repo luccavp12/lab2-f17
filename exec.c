@@ -19,9 +19,6 @@ exec(char *path, char **argv)
   pde_t *pgdir, *oldpgdir;
   struct proc *curproc = myproc();
 
-  //Initializing the stack size, in unit of pages
-  curproc->stacksize = 1;
-
   begin_op();
 
   if((ip = namei(path)) == 0){
@@ -118,6 +115,9 @@ page.
   curproc->sz = sz;
   curproc->tf->eip = elf.entry;  // main
   curproc->tf->esp = sp;
+   
+  curproc->stacksize = 1; //Initializing the stack size, in unit of pages
+  
   switchuvm(curproc);
   freevm(oldpgdir);
   return 0;

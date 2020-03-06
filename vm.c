@@ -351,12 +351,12 @@ copyuvm(struct proc* p) //Changed parameter
     pa = PTE_ADDR(*pte);
     flags = PTE_FLAGS(*pte); 
     // Allocating new page
-    if ((mem =kalloc())  == 0) {
+    if ((mem = kalloc())  == 0) {
       cprintf("copyuvm loop 2: page allocation failed");
       goto bad;
     }
     // Copy memory from old phtsical page to new physical page
-    memmove(mem, (void *)P2V(pa), PGSIZE);
+    memmove(mem, (char*)P2V(pa), PGSIZE);
     if (mappages(d, (void *)page, PGSIZE, V2P(mem), flags) < 0) {
       cprintf("copyuvm: mappages() doesn't map correctly");
       goto bad;
