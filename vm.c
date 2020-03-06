@@ -339,7 +339,7 @@ copyuvm(struct proc* p) //Changed parameter
   //variable in struct proc(proc.h) to keep track of the size of the stack
 
   //TODO 4: Second For Loop
-  for (int i = 0; i < p->stacksize; i++) {	
+  for (i = 0; i < p->stacksize; i++) {	
     uint page = STACKBASE - ((PGSIZE - 1) * (i + 1));
     if ((pte = walkpgdir(p->pgdir, (void *)page, 0)) == 0)
       panic("copyuvm loop 2: no pte");
