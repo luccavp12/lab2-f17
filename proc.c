@@ -138,6 +138,10 @@ userinit(void)
   p->tf->eflags = FL_IF;
   p->tf->esp = STACKBASE;
   p->tf->eip = 0;  // beginning of initcode.S
+  p->tf->ebp = STACKBASE;
+
+  if (allocuvm(p->pgdir, PGROUNDDOWN(STACKBASE), STACKBASE) == 0)
+    panic("Stack page could not be allocated ");
 
   safestrcpy(p->name, "initcode", sizeof(p->name));
   p->cwd = namei("/");
