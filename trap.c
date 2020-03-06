@@ -78,6 +78,25 @@ trap(struct trapframe *tf)
     lapiceoi();
     break;
 
+  case T_PGFLT:
+    {
+      // rcr2() returns the address causing PGLFT (stored in control register)
+      uint control_reg = rcr2();
+      struct proc* p = myproc();
+
+      // In case of page fault, allocaate new page table entry
+      if (allocuvm(p->pgdir, PGROUNDDOWN(control_reg), control_reg) == 0) {
+          cprintf("case PGFLT: page allocation failed\n");
+          exit();
+      }
+      else {
+          cprintf("case PGFLT: stack too small, old # of pages=%d=\n", p->stacksize);
+          p->stacksize += 1;
+          cprintf("\tcase PGFLT: had to grow stack, new # of pages=%d=\n", p->stacksize);
+      }
+      break;
+    }
+
   //PAGEBREAK: 13
   default:
     if(myproc() == 0 || (tf->cs&3) == 0){
