@@ -141,7 +141,7 @@ userinit(void)
   p->tf->ebp = STACKBASE;
 
   if (allocuvm(p->pgdir, PGROUNDDOWN(STACKBASE), STACKBASE) == 0)
-    panic("Stack page could not be allocated ");
+    panic("Faield to create stack page");
 
   safestrcpy(p->name, "initcode", sizeof(p->name));
   p->cwd = namei("/");
